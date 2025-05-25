@@ -16,6 +16,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        // 게임오버 상태면 이동 불가
+        if (GameManager.Instance.isGameOver || GameManager.Instance.isPaused)
+            return;
+
         // 입력을 받아서 X축으로만 움직임
         float moveInput = Input.GetAxis("Horizontal");
 
@@ -25,5 +29,15 @@ public class Player : MonoBehaviour
         // 플레이어가 X축 범위를 벗어나지 않도록 제한
         float clampedX = Mathf.Clamp(transform.position.x, minX, maxX); // X좌표 제한
         transform.position = new Vector3(clampedX, transform.position.y, transform.position.z); // 위치 재설정
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // 1. 충돌한 오브젝트가 "Car" 태그를 가졌는지 확인
+        if (collision.gameObject.CompareTag("Car"))
+        {
+            Debug.Log("플레이어가 자동차와 충돌!");
+            GameManager.Instance.GameOver(); // 게임 오버 호출
+        }
     }
 }
