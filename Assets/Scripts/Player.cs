@@ -22,22 +22,17 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.isGameOver || GameManager.Instance.isPaused)
             return;
 
-        // 좌우 입력 받기
         float moveInput = Input.GetAxis("Horizontal");
+        float absInput = Mathf.Abs(moveInput);
 
-        // Rigidbody 속도 설정 (X축 이동만)
         rb.linearVelocity = new Vector3(moveInput * moveSpeed, rb.linearVelocity.y, rb.linearVelocity.z);
+        animator.SetFloat("Speed", absInput);
 
-        // 애니메이션 매개변수 설정 (Speed 파라미터로 Idle ↔ Walk 전환)
-        animator.SetFloat("Speed", Mathf.Abs(moveInput));
-
-        // 이동 방향을 바라보게 회전
         if (moveInput > 0.1f)
-            transform.rotation = Quaternion.Euler(0f, 90f, 0f);   // 오른쪽
+            transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         else if (moveInput < -0.1f)
-            transform.rotation = Quaternion.Euler(0f, -90f, 0f);  // 왼쪽
+            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
 
-        // X축 위치 제한
         float clampedX = Mathf.Clamp(transform.position.x, minX, maxX);
         transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
     }
@@ -46,7 +41,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Car"))
         {
-            Debug.Log("플레이어가 자동차와 충돌!");
+            GameManager.Instance.PlaySFX(GameManager.Instance.hitSfx); // 충돌 효과음
             GameManager.Instance.GameOver();
         }
     }
