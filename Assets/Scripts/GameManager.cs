@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        carSpawner = FindObjectOfType<CarSpawner>();
+        carSpawner = Object.FindFirstObjectByType <CarSpawner>();
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
