@@ -20,7 +20,11 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (GameManager.Instance.isGameOver || GameManager.Instance.isPaused)
+        {
+            rb.linearVelocity = Vector3.zero;
+            animator.SetFloat("Speed", 0f);
             return;
+        }
 
         float moveInput = Input.GetAxis("Horizontal");
         float absInput = Mathf.Abs(moveInput);
@@ -41,7 +45,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Car"))
         {
-            GameManager.Instance.PlaySFX(GameManager.Instance.hitSfx); // 충돌 효과음
+            GameManager.Instance.PlaySFX(GameManager.Instance.hitSfx);
             GameManager.Instance.GameOver();
         }
     }
