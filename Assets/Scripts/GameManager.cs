@@ -69,23 +69,38 @@ public class GameManager : MonoBehaviour
         UpdateBestTimeUI();
 
         nextDifficultyIncrease = difficultyIncreaseInterval;
-
         PlayNextBgm();
 
+        // 슬라이더 초기값 세팅 및 이벤트 연결
         if (carSpeedSlider != null && carSpawner != null)
+        {
             carSpeedSlider.value = carSpawner.carSpeed;
+            carSpeedSlider.onValueChanged.AddListener(OnCarSpeedChanged);
+        }
 
         if (playerSpeedSlider != null && player != null)
+        {
             playerSpeedSlider.value = player.moveSpeed;
+            playerSpeedSlider.onValueChanged.AddListener(OnPlayerSpeedChanged);
+        }
 
         if (volumeSlider != null && bgmSource != null)
+        {
             volumeSlider.value = bgmSource.volume;
+            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            TogglePause();
+        {
+            // ESC 누르면 일시정지 대신 게임오버 처리
+            if (!isGameOver)
+            {
+                GameOver();
+            }
+        }
 
         if (!isGameOver && !isPaused)
         {
@@ -141,7 +156,10 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
 
         isGameOver = true;
-        Time.timeScale = 1f;
+        isPaused = false;
+
+        // 게임오버 시 시간 멈추거나 멈추지 않는 선택 가능 (필요시 주석 해제)
+        // Time.timeScale = 0f;
 
         if (survivalTime > bestTime)
         {
@@ -152,34 +170,40 @@ public class GameManager : MonoBehaviour
         }
 
         if (gameOverPanel != null)
-        {
             gameOverPanel.SetActive(true);
-            if (finalScoreText != null)
-                finalScoreText.text = $"Final Time: {survivalTime:F1}";
-        }
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);  // 게임오버 시 설정창은 끄기
+
+        if (finalScoreText != null)
+            finalScoreText.text = $"Final Time: {survivalTime:F1}";
     }
 
     public void OnRestartButtonClicked()
     {
         PlaySFX(clickSfx);
+        isPaused = false;
+        isGameOver = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void TogglePause()
     {
-        isPaused = !isPaused;
-
-        if (settingsPanel != null)
-            settingsPanel.SetActive(isPaused);
-
-        Time.timeScale = isPaused ? 0f : 1f;
+        // 더 이상 사용하지 않음, 비워두거나 삭제 가능
     }
 
     public void OnCarSpeedChanged(float value)
     {
         if (carSpawner != null)
             carSpawner.carSpeed = value;
+
+        foreach (var car in GameObject.FindGameObjectsWithTag("Car"))
+        {
+            var move = car.GetComponent<CarMovement>();
+            if (move != null)
+                move.speed = value;
+        }
     }
 
     public void OnPlayerSpeedChanged(float value)

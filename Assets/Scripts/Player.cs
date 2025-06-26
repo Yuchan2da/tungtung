@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
     {
         if (GameManager.Instance.isGameOver || GameManager.Instance.isPaused)
         {
-            rb.linearVelocity = Vector3.zero;
+            rb.velocity = Vector3.zero;
             animator.SetFloat("Speed", 0f);
             return;
         }
@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
         float moveInput = Input.GetAxis("Horizontal");
         float absInput = Mathf.Abs(moveInput);
 
-        rb.linearVelocity = new Vector3(moveInput * moveSpeed, rb.linearVelocity.y, rb.linearVelocity.z);
+        rb.velocity = new Vector3(moveInput * moveSpeed, rb.velocity.y, rb.velocity.z);
         animator.SetFloat("Speed", absInput);
 
         if (moveInput > 0.1f)
